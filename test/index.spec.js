@@ -1,14 +1,23 @@
 // const mdLinks = require('../index.js');
 const {
   ruteExist,
-  ruteIsAbsolute,
+  getAbsoluteRoute,
   ruteExtension ,
-  getLinks,} = require('../index.js');
+  getLinks,
+  validateStatus,
+} = require('../index.js');
 
 const testRoute = '.\\fileDoc\\prueba1.md'
 const testRouteFalse = '.\fileDoc\prueba1.md'
-const testRouteAbs = 'D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md';
+const testRouteAbs = 'D:\\LABORATORIA\\LIM018-md-links\\fileDoc\\prueba1.md';
 
+const testArrayLinks = [
+  {
+    href: 'https://es.wikipedia.org/wiki/Markdown',
+    text: 'Markdown',
+    routeF: 'D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md'
+  }
+  ];
 
 describe("ruteExist", () => {
   it('is a function', () => {
@@ -27,12 +36,17 @@ describe("ruteExist", () => {
 
 describe("ruteIsAbsolute", () => {
   it('is a function', () => {
-    expect(typeof ruteIsAbsolute).toBe('function');
+    expect(typeof getAbsoluteRoute).toBe('function');
   });
 
   it('deberia confirmar si la ruta es Absoluta, sino convertirla a Absoluta', ()=>{
-    expect(ruteIsAbsolute(testRoute)).toEqual(testRouteAbs);
+    expect(getAbsoluteRoute(testRoute)).toEqual(testRouteAbs);
   })
+
+  it('deberia devolverla ruta es Absoluta, prque se recibio como tal', ()=>{
+    expect(getAbsoluteRoute(testRouteAbs)).toEqual(testRouteAbs);
+  })
+
 });
 
 describe("ruteExtension", () => {
@@ -41,29 +55,47 @@ describe("ruteExtension", () => {
   });
 
   it('deberia confirmar si existen archivos .md', ()=>{
-    expect(ruteExtension.resolve(testRoute)).toEqual('.md');
+    expect(ruteExtension(testRoute)).toEqual('.md');
     ;
   })
 });
-console.log('test', ruteExtension(testRoute))
+
 describe("getLinks", () => {
   it('is a function', () => {
     expect(typeof getLinks).toBe('function');
   });
-
-  const testArrayLinks = [
-    {
-      href: 'https://es.wikipedia.org/wiki/Markdown',
-      text: 'Markdown',
-      routeF: 'D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md'
-    }
-  ];
 
   it('deberia obtener un array de links', ()=>{
     expect(getLinks(testRoute)).toEqual(testArrayLinks);
   })
 });
 
+describe("validateStatus", () => {
+  it('is a function', () => {
+    expect(typeof validateStatus).toBe('function');
+  });
+
+  const promiseTestArray = [
+    {
+      href: 'https://es.wikipedia.org/wiki/Markdown',
+      text: 'Markdown',
+      routeF: 'D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md',
+      linksStatus: 200,
+      message: 'ok'
+    }
+    ];
+
+  it('deberia obtener un array de links', ()=>{
+    return expect(validateStatus(testArrayLinks)).resolves.toEqual(promiseTestArray);
+    })
+  })
+
+  it('deberia obtener un array de links', ()=>{
+    return validateStatus(testArrayLinks).then(result =>{
+      expect(result).toBe(promiseTestArray)
+    })
+    })
+ 
 
 
 

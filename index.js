@@ -14,20 +14,17 @@ const ruteExist = (route) => fs.existsSync(route);
 
 
  // SABER SI LA RUTA ES ABSOLUTA
-const ruteIsAbsolute= (route) =>{
-  (path.isAbsolute(route))
-  ?route
-  :path.resolve(route)
+const getAbsoluteRoute= (route) =>{ // getAbsoluteRoute
 
-  return ruteIsAbsolute;
+  if (path.isAbsolute(route)) {
+    return route
   }
+  return path.resolve(route) 
+}
 
 // PARA SABER LA EXTENSION
-const ruteExtension = (route) =>{(path.extname(route))
-  // ?console.log("existen archivos .md".green)
-  // :console.log("NO existen archivos .md".red) 
- // return ruteExtension;
-  };
+const ruteExtension = (route) => (path.extname(route));
+  
 
 
 // PARA EXTRAER LON LINK DEL ARCHIVO MD
@@ -59,45 +56,65 @@ const getLinks = (route)  => {
 
 
 // FUNCION VALIDATE
- const validateStatus = () => {
-  const arrayLinks = getLinks(testRoute) // preguntar como obtener el array como parametro
-  arrayLinksPromises = [];
+ const validateStatus = (arrayLinks) => {
+  // preguntar como obtener el array como parametro
+  newArrayPromises = [];
   arrayLinks.forEach((objL) => {
     const httpLink = objL.href
     // console.log(httpLink)
-    const x = fetch(httpLink)
+    const promise = fetch(httpLink)
     .then((promiseFetch) =>{
-      console.log(
-      linksStatus = promiseFetch.status,
-      linksMessage = promiseFetch.statusText)
+      return {
+        // href: objL.href,
+        // text: objL.text,
+        ...objL,
+        linksStatus: promiseFetch.status,
+        message: 'ok'
+      }
     })
     .catch((err) => {
-      err.message = err.message
+     
+      return {
+        ...objL,
+        message: 'fail'
+      }
     });
-   console.log('status',arrayLinksPromises.push(x));
-   console.log(x);
- });
-
+    newArrayPromises.push(promise);
+   
+   });
+   return newArrayPromises
  };
-console.log(validateStatus);
+
+// FUNCION STATS 
+
+const stats = (arrayLinks) => {
+const total = arrayLinks.length;
+const unique = arrayLinks.length;
+const broken = arrayLinks.filter(objLi => objLi.message === 'fail').length;
+  return{
+    total,
+    unique,
+    broken,
+  }; 
+};
 
 
 
-
-
-
-
-
- 
 
 // PROMESA
 const mdLink = (route) =>
   new Promise((resolve, reject) => {
     ruteExist(route);
-    ruteIsAbsolute(route);
+    getAbsoluteRoute(route);
     ruteExtension (route);
-    getLinks(route);
-    validateStatus();
+    const arrayLinks = getLinks(route) 
+    const arrayPromises = validateStatus(arrayLinks);
+    //console.log(arrayPromises);
+    Promise.all(arrayPromises).then(res => {
+      //console.log(res); 
+    });
+    stats(arrayLinks);
+    console.log(stats(arrayLinks)); 
     resolve([]);
  });
 
@@ -112,11 +129,10 @@ mdLink(testRoute)
 
  module.exports ={
   ruteExist,
-  ruteIsAbsolute,
+  getAbsoluteRoute,
   ruteExtension ,
   getLinks,
+  validateStatus,
  };
 
-// module.exports = {
-//   ruteExist
-// };
+
