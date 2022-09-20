@@ -1,5 +1,6 @@
 const fs = require('fs') 
 const path = require('node:path')  
+const fetch = require('node-fetch')
 var colors = require('colors');
 
 // RUTA1
@@ -9,7 +10,7 @@ const testRoute = '.\\fileDoc\\prueba1.md'
 const ruteExist = (route) => fs.existsSync(route);
     // ?console.log("El archivo EXISTE!".green)
     // :console.log("El archivo NO EXISTE!".red)
-    console.log(ruteExist)
+    //console.log(ruteExist)
 
 
  // SABER SI LA RUTA ES ABSOLUTA
@@ -22,11 +23,10 @@ const ruteIsAbsolute= (route) =>{
   }
 
 // PARA SABER LA EXTENSION
-const ruteExtension = (route) =>{
-  (path.extname(route))
+const ruteExtension = (route) =>{(path.extname(route))
   // ?console.log("existen archivos .md".green)
   // :console.log("NO existen archivos .md".red) 
-  return ruteExtension;
+ // return ruteExtension;
   };
 
 
@@ -50,19 +50,36 @@ const getLinks = (route)  => {
         text,
         routeF,
       }
-        return arrayLinks.push(objLiks);
-
+         arrayLinks.push(objLiks);
      })
     }
   }
-  return getLinks;
- }
+  return arrayLinks;
+}
 
 
+// FUNCION VALIDATE
+ const validateStatus = () => {
+  const arrayLinks = getLinks(testRoute) // preguntar como obtener el array como parametro
+  arrayLinksPromises = [];
+  arrayLinks.forEach((objL) => {
+    const httpLink = objL.href
+    // console.log(httpLink)
+    const x = fetch(httpLink)
+    .then((promiseFetch) =>{
+      console.log(
+      linksStatus = promiseFetch.status,
+      linksMessage = promiseFetch.statusText)
+    })
+    .catch((err) => {
+      err.message = err.message
+    });
+   console.log('status',arrayLinksPromises.push(x));
+   console.log(x);
+ });
 
-
-
-
+ };
+console.log(validateStatus);
 
 
 
@@ -80,6 +97,7 @@ const mdLink = (route) =>
     ruteIsAbsolute(route);
     ruteExtension (route);
     getLinks(route);
+    validateStatus();
     resolve([]);
  });
 
@@ -102,6 +120,3 @@ mdLink(testRoute)
 // module.exports = {
 //   ruteExist
 // };
-
-
-

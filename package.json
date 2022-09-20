@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/yadigarcia/LIM018-md-links#readme",
   "dependencies": {
-    "colors": "^1.4.0"
+    "colors": "^1.4.0",
+    "node-fetch": "^2.6.7"
   }
 }
