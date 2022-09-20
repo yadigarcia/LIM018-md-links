@@ -57,7 +57,6 @@ const getLinks = (route)  => {
 
 // FUNCION VALIDATE
  const validateStatus = (arrayLinks) => {
-  // preguntar como obtener el array como parametro
   newArrayPromises = [];
   arrayLinks.forEach((objL) => {
     const httpLink = objL.href
@@ -87,16 +86,17 @@ const getLinks = (route)  => {
 
 // FUNCION STATS 
 
-const stats = (arrayLinks) => {
-const total = arrayLinks.length;
-const unique = arrayLinks.length;
-const broken = arrayLinks.filter(objLi => objLi.message === 'fail').length;
-  return{
-    total,
-    unique,
-    broken,
-  }; 
-};
+// const stats = (newArrayPromises) => {
+//   console.log(newArrayPromises)
+// const total = newArrayPromises.length;
+// const unique = newArrayPromises.filter(objLi => objLi.message === 'ok').length;
+// const broken = newArrayPromises.filter(objLi => objLi.message === 'fail').length;
+//   return{
+//     total,
+//     unique,
+//     broken,
+//   }; 
+// };
 
 
 
@@ -109,12 +109,13 @@ const mdLink = (route) =>
     ruteExtension (route);
     const arrayLinks = getLinks(route) 
     const arrayPromises = validateStatus(arrayLinks);
-    //console.log(arrayPromises);
-    Promise.all(arrayPromises).then(res => {
-      //console.log(res); 
+  
+    const newArrayPromises = Promise.all(arrayPromises).then(res => {
+      console.log(res); 
     });
-    stats(arrayLinks);
-    console.log(stats(arrayLinks)); 
+    console.log(newArrayPromises)
+    //stats(newArrayPromises);
+    //console.log(stats(arrayLinks)); 
     resolve([]);
  });
 
