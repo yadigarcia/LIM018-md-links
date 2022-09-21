@@ -8,11 +8,7 @@ const testRoute = '.\\fileDoc\\prueba1.md'
 
  // SABER SI LA RUTA EXISTE
 const ruteExist = (route) => fs.existsSync(route);
-    // ?console.log("El archivo EXISTE!".green)
-    // :console.log("El archivo NO EXISTE!".red)
-    //console.log(ruteExist)
-
-
+   
  // SABER SI LA RUTA ES ABSOLUTA
 const getAbsoluteRoute= (route) =>{ // getAbsoluteRoute
 
@@ -24,8 +20,6 @@ const getAbsoluteRoute= (route) =>{ // getAbsoluteRoute
 
 // PARA SABER LA EXTENSION
 const ruteExtension = (route) => (path.extname(route));
-  
-
 
 // PARA EXTRAER LON LINK DEL ARCHIVO MD
 const getLinks = (route)  => {
@@ -85,19 +79,38 @@ const getLinks = (route)  => {
  };
 
 // FUNCION STATS 
+const stats = (newArrayPromises) => {
 
-// const stats = (newArrayPromises) => {
-//   console.log(newArrayPromises)
-// const total = newArrayPromises.length;
-// const unique = newArrayPromises.filter(objLi => objLi.message === 'ok').length;
-// const broken = newArrayPromises.filter(objLi => objLi.message === 'fail').length;
-//   return{
-//     total,
-//     unique,
-//     broken,
-//   }; 
-// };
+const total = newArrayPromises.length;
+const unique = newArrayPromises.filter(objLi => objLi.message === 'ok').length;
+const broken = newArrayPromises.filter(objLi => objLi.message === 'fail').length;
+  return{
+    total,
+    unique,
+    broken,
+  }; 
+};
 
+
+// RECORRER DIRECTORIO, RECURSIVIDAD
+const directory = './fileDoc'
+  const findFileInDir = (directory)=> {
+    if(fs.statSync(directory).isDirectory()){
+      console.log('hola')
+      const dirSearch = fs.readdirSync(directory)
+
+      dirSearch.forEach((files) =>{
+        console.log(files)
+       findFileInDir(files);
+       
+      })
+    }else{
+      console.log('no es directorio');// pregunta si existe directorio
+
+ }
+}
+
+findFileInDir(directory);
 
 
 
@@ -107,15 +120,16 @@ const mdLink = (route) =>
     ruteExist(route);
     getAbsoluteRoute(route);
     ruteExtension (route);
+
     const arrayLinks = getLinks(route) 
     const arrayPromises = validateStatus(arrayLinks);
-  
-    const newArrayPromises = Promise.all(arrayPromises).then(res => {
-      console.log(res); 
+
+    Promise.all(arrayPromises).then(res => {
+        // console.log('arriba',res)
+      stats(res);
+      // console.log(stats(res)) 
     });
-    console.log(newArrayPromises)
-    //stats(newArrayPromises);
-    //console.log(stats(arrayLinks)); 
+  
     resolve([]);
  });
 
@@ -123,9 +137,6 @@ mdLink(testRoute)
   .then((result) =>{ 
     // console.log(result) 
   });
-
-
-
 
 
  module.exports ={
