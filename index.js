@@ -3,9 +3,6 @@ const path = require("node:path");
 const fetch = require("node-fetch");
 var colors = require("colors");
 
-// RUTA1
-const testRoute = ".\\fileDoc\\prueba1.md";
-
 // SABER SI LA RUTA EXISTE
 const ruteExist = (route) => fs.existsSync(route);
 
@@ -27,7 +24,7 @@ const getLinks = (route) => {
   const arrayLinks = [];
 
   // PARA LEER EL ARCHIVO
-  const ruteRead = fs.readFileSync(testRoute, "utf8");
+  const ruteRead = fs.readFileSync(route, "utf8");
 
   if (ruteRead !== "") {
     const urlFind = ruteRead.match(/\[.*\]\(.*\)/gm);
@@ -66,7 +63,7 @@ const validateStatus = (arrayLinks) => {
         };
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         return {
           ...objL,
           message: "fail",
@@ -94,8 +91,7 @@ const stats = (newArrayPromises) => {
 };
 
 // RECORRER DIRECTORIO, RECURSIVIDAD
-
-const routeDirectory = path.join(__dirname + "/fileDoc");
+//const routeDirectory = path.join(__dirname + "/fileDoc");
 
 const findFileInDirectory = (routeDirectory) => {
   const arrayFiles = [];
@@ -103,47 +99,68 @@ const findFileInDirectory = (routeDirectory) => {
   const readDirectory = fs.readdirSync(routeDirectory);
   readDirectory.forEach((files) => {
     const newRoutedirectory = path.join(routeDirectory, files);
- 
+
     if (fs.statSync(newRoutedirectory).isDirectory()) {
-   
       findFileInDirectory(newRoutedirectory).forEach((file) => {
         arrayFiles.push(file);
-      })
-    }
-    //if(ruteExtension(newRoutedirectory) === '.md')
-    else {
+      });
+    } else if (ruteExtension(newRoutedirectory) === ".md") {
       //console.log(newRoutedirectory)
       arrayFiles.push(newRoutedirectory);
     }
   });
   return arrayFiles;
-  //console.log('no es directorio');// pregunta si existe directorio
+  o;
 };
 
-console.log(findFileInDirectory(routeDirectory))
-
+//console.log(findFileInDirectory(routeDirectory));
 
 // PROMESA
 const mdLink = (route) =>
   new Promise((resolve, reject) => {
-    ruteExist(route);
-    getAbsoluteRoute(route);
-    ruteExtension(route);
+    if (ruteExist(route)) {
+      //console.log("hola", ruteExist(route));
 
-    const arrayLinks = getLinks(route);
-    const arrayPromises = validateStatus(arrayLinks);
+      const routeAbs = getAbsoluteRoute(route);
+      //console.log("abs", routeAbs);
 
-    Promise.all(arrayPromises).then((res) => {
-      // console.log('arriba',res)
-      stats(res);
-      // console.log(stats(res))
-    });
+      if (fs.statSync(routeAbs).isFile()) {
+        // console.log(fs.statSync(routeAbs).isFile());
 
-    resolve([]);
+        if (ruteExtension(routeAbs) === ".md") {
+          //console.log("ext", ruteExtension(routeAbs));
+
+          const arrayLinks = getLinks(routeAbs);
+          const arrayPromises = validateStatus(arrayLinks);
+
+          Promise.all(arrayPromises)
+            .then((res) => {
+              // console.log(res);
+              stats(res);
+              // console.log(stats(res));
+            })
+            .then((resultado) => resolve([resultado]));
+        }
+      } else {
+        let promises = findFileInDirectory(routeAbs).forEach((link) => {
+          // console.log(link)
+          console.log(mdLink(link));
+        });
+        //console.log(mdLink(link))
+        Promise.all(promises).then((resultado) => resolve(resultado));
+      }
+    } else {
+      console.log("ruta no existe");
+    }
+    //resolve([]);
   });
 
+// RUTA1
+// const testRoute = ".\\fileDoc\\prueba1.md";
+const testRoute = ".\\fileDoc";
+
 mdLink(testRoute).then((result) => {
-  // console.log(result)
+  //console.log(result)
 });
 
 module.exports = {
