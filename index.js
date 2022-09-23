@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("node:path");
 const fetch = require("node-fetch");
 var colors = require("colors");
+const { resolve } = require("path");
 
 // SABER SI LA RUTA EXISTE
 const ruteExist = (route) => fs.existsSync(route);
@@ -110,13 +111,11 @@ const findFileInDirectory = (routeDirectory) => {
     }
   });
   return arrayFiles;
-  o;
 };
 
-//console.log(findFileInDirectory(routeDirectory));
-
 // PROMESA
-const mdLink = (route) =>
+const mdLinks = (route) =>
+  //console.log(route)
   new Promise((resolve, reject) => {
     if (ruteExist(route)) {
       //console.log("hola", ruteExist(route));
@@ -124,43 +123,43 @@ const mdLink = (route) =>
       const routeAbs = getAbsoluteRoute(route);
       //console.log("abs", routeAbs);
 
-      if (fs.statSync(routeAbs).isFile()) {
-        // console.log(fs.statSync(routeAbs).isFile());
+      if (fs.statSync(routeAbs).isDirectory()) {
+        //console.log('directory')
+        const arrayLinks = findFileInDirectory(routeAbs);
+
+        const arrayPromises = arrayLinks.map((link) => mdLinks(link));
+        Promise.all(arrayPromises).then((resultado) => resolve(resultado));
+
+        //console.log(arrayPromises);
+      } else if (fs.statSync(routeAbs).isFile()) {
+        //console.log('is file',fs.statSync(routeAbs).isFile());
 
         if (ruteExtension(routeAbs) === ".md") {
           //console.log("ext", ruteExtension(routeAbs));
-
-          const arrayLinks = getLinks(routeAbs);
-          const arrayPromises = validateStatus(arrayLinks);
-
-          Promise.all(arrayPromises)
-            .then((res) => {
-              // console.log(res);
-              stats(res);
-              // console.log(stats(res));
-            })
-            .then((resultado) => resolve([resultado]));
         }
-      } else {
-        let promises = findFileInDirectory(routeAbs).forEach((link) => {
-          // console.log(link)
-          console.log(mdLink(link));
+
+        const arrayLinks = getLinks(routeAbs);
+        const arrayPromises = validateStatus(arrayLinks);
+
+        Promise.all(arrayPromises).then((res) => {
+          //console.log(res);
+          stats(res);
+          //console.log(stats(res));
+          // res.then((resultado) => resolve([resultado]));
+          resolve(res);
         });
-        //console.log(mdLink(link))
-        Promise.all(promises).then((resultado) => resolve(resultado));
       }
     } else {
       console.log("ruta no existe");
     }
-    //resolve([]);
   });
 
 // RUTA1
 // const testRoute = ".\\fileDoc\\prueba1.md";
 const testRoute = ".\\fileDoc";
 
-mdLink(testRoute).then((result) => {
-  //console.log(result)
+mdLinks(testRoute).then((result) => {
+  console.log(result);
 });
 
 module.exports = {
@@ -169,4 +168,5 @@ module.exports = {
   ruteExtension,
   getLinks,
   validateStatus,
+  mdLinks,
 };

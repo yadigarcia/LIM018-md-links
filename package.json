@@ -34,7 +34,11 @@
   },
   "homepage": "https://github.com/yadigarcia/LIM018-md-links#readme",
   "dependencies": {
+    "chalk": "^5.0.1",
+    "clear": "^0.1.0",
     "colors": "^1.4.0",
+    "figlet": "^1.5.2",
+    "gradient-string": "^2.0.2",
     "node-fetch": "^2.6.7"
   }
 }
