@@ -76,14 +76,12 @@ const validateStatus = (arrayLinks) => {
 };
 
 // FUNCION STATS
-const stats = (newArrayPromises) => {
+const statsLinks = (newArrayPromises) => {
+
   const total = newArrayPromises.length;
-  const unique = newArrayPromises.filter(
-    (objLi) => objLi.message === "ok"
-  ).length;
-  const broken = newArrayPromises.filter(
-    (objLi) => objLi.message === "fail"
-  ).length;
+  const unique = newArrayPromises.filter((objLi) => objLi.message === 'ok').length;
+  const broken = newArrayPromises.filter((objLi) => objLi.message ==='fail').length;
+
   return {
     total,
     unique,
@@ -128,7 +126,7 @@ const mdLinks = (route) =>
         const arrayLinks = findFileInDirectory(routeAbs);
 
         const arrayPromises = arrayLinks.map((link) => mdLinks(link));
-        Promise.all(arrayPromises).then((resultado) => resolve(resultado));
+        Promise.all(arrayPromises).then((resultado) => resolve(resultado.flat()));
 
         //console.log(arrayPromises);
       } else if (fs.statSync(routeAbs).isFile()) {
@@ -143,24 +141,24 @@ const mdLinks = (route) =>
 
         Promise.all(arrayPromises).then((res) => {
           //console.log(res);
-          stats(res);
-          //console.log(stats(res));
+         
+         // console.log(statsLinks(res));
           // res.then((resultado) => resolve([resultado]));
-          resolve(res);
+          resolve(res.flat());
         });
       }
     } else {
-      console.log("ruta no existe");
+      reject("ruta no existe");
     }
   });
 
 // RUTA1
 // const testRoute = ".\\fileDoc\\prueba1.md";
-const testRoute = ".\\fileDoc";
+/*const testRoute = ".\\fileDoc";
 
 mdLinks(testRoute).then((result) => {
   console.log(result);
-});
+});*/
 
 module.exports = {
   ruteExist,
@@ -169,4 +167,5 @@ module.exports = {
   getLinks,
   validateStatus,
   mdLinks,
+  statsLinks,
 };

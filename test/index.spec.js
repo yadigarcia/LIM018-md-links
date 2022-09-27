@@ -7,15 +7,17 @@ const {
   validateStatus,
 } = require("../index.js");
 
+const fetch = jest.mock('node-fetch');
+
 const testRoute = ".\\fileDoc\\prueba1.md";
 const testRouteFalse = ".\fileDocprueba1.md";
-const testRouteAbs = "D:\\LABORATORIA\\LIM018-md-links\\fileDoc\\prueba1.md";
+const testRouteAbs = "C:\\Users\\Toshiba\\md\\LIM018-md-links\\fileDoc\\prueba1.md";
 
 const testArrayLinks = [
   {
     href: "https://es.wikipedia.org/wiki/Markdown",
     text: "Markdown",
-    routeF: "D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md",
+    routeF: "C:\\Users\\Toshiba\\md\\LIM018-md-links.\\fileDoc\\prueba1.md",
   },
 ];
 
@@ -33,6 +35,7 @@ describe("ruteExist", () => {
   });
 });
 
+
 describe("ruteIsAbsolute", () => {
   it("is a function", () => {
     expect(typeof getAbsoluteRoute).toBe("function");
@@ -47,6 +50,7 @@ describe("ruteIsAbsolute", () => {
   });
 });
 
+
 describe("ruteExtension", () => {
   it("is a function", () => {
     expect(typeof ruteExtension).toBe("function");
@@ -56,6 +60,7 @@ describe("ruteExtension", () => {
     expect(ruteExtension(testRoute)).toEqual(".md");
   });
 });
+
 
 describe("getLinks", () => {
   it("is a function", () => {
@@ -67,33 +72,59 @@ describe("getLinks", () => {
   });
 });
 
+
 describe("validateStatus", () => {
   it("is a function", () => {
     expect(typeof validateStatus).toBe("function");
   });
 
-  const promiseTestArray = [
+  const testArrayLinks = [
     {
       href: "https://es.wikipedia.org/wiki/Markdown",
       text: "Markdown",
-      routeF: "D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md",
+      routeF: "C:\\Users\\Toshiba\\md\\LIM018-md-links.\\fileDoc\\prueba1.md",
+    },
+  ];
+
+  const promiseResolve = [
+    {
+      href: "https://es.wikipedia.org/wiki/Markdown",
+      text: "Markdown",
+      routeF: "C:\\Users\\Toshiba\\md\\LIM018-md-links.\\fileDoc\\prueba1.md",
       linksStatus: 200,
       message: "ok",
     },
   ];
-
-  it("deberia obtener un array de links", () => {
-    return expect(validateStatus(testArrayLinks)).resolves.toEqual(
-      promiseTestArray
-    );
+  const promiseReject = [
+    {
+      href: "https://es.wikipedia.org/wiki/Markdown",
+      text: "Markdown",
+      routeF: "C:\\Users\\Toshiba\\md\\LIM018-md-links.\\fileDoc\\prueba1.md",
+      linksStatus: 404,
+      message: "fail",
+    },
+  ];
+  it("deberia obtener un array de links con status ok ", (done) => {
+    Promise.all(validateStatus(testArrayLinks)).then((response) =>
+      expect(response).toEqual(promiseResolve))
+    done();
   });
 
-  it("deberia obtener un array de links", () => {
-    return validateStatus(testArrayLinks).then((result) => {
-      expect(result).toBe(promiseTestArray);
-    });
+  it("deberia obtener un array de links con status fail", (done) => {
+    fetch.mockImplementation(() => Promise.reject(
+      {
+        status:404,
+        message: 'fail',
+      }
+    ))
+
+    Promise.all(validateStatus(testArrayLinks))
+      .then((res) => {
+        expect(res).toEqual(promiseReject);
+      });
   });
 });
+
 
 // describe('mdLink', () => {
 
