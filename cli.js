@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const process = require('process');
-const { mdLinks, statsLinks } = require('./index.js');
+const { statsLinks } = require('./index.js');
+const mdLinks = require('./mdLinks.js');
 const gradient = require('gradient-string');
 const figlet = require('figlet');
 const clear = require('clear');
@@ -9,6 +10,8 @@ clear();
 const pathFile = process.argv.filter(param => !(['--stats', '--validate'].includes(param)))[2];
 const validate = process.argv.includes('--validate')
 const stats = process.argv.includes('--stats')
+
+
 
 
 mdLinks(pathFile, { Option: validate, option: stats })

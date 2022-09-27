@@ -1,10 +1,14 @@
+const fs = require("fs");
+var colors = require("colors");
+
 const {
     ruteExist,
     getAbsoluteRoute,
     ruteExtension,
     getLinks,
     validateStatus,
-} = require("../index.js");
+    findFileInDirectory
+} = require("./index.js");
 
 
 
@@ -48,3 +52,15 @@ const mdLinks = (route) =>
       reject("ruta no existe");
     }
   });
+
+
+
+  // RUTA1
+// const testRoute = ".\\fileDoc\\prueba1.md";
+/*const testRoute = ".\\fileDoc";
+
+mdLinks(testRoute).then((result) => {
+  console.log(result);
+});*/
+
+  module.exports = mdLinks;
