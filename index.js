@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("node:path");
 const fetch = require("node-fetch");
-var colors = require("colors");
 const { resolve } = require("path");
 
 // SABER SI LA RUTA EXISTE
@@ -96,6 +95,7 @@ const findFileInDirectory = (routeDirectory) => {
   const arrayFiles = [];
 
   const readDirectory = fs.readdirSync(routeDirectory);
+  
   readDirectory.forEach((files) => {
     const newRoutedirectory = path.join(routeDirectory, files);
 

@@ -5,6 +5,7 @@ const {
   ruteExtension,
   getLinks,
   validateStatus,
+  findFileInDirectory
 } = require("../index.js");
 
 const fetch = jest.mock('node-fetch');
@@ -12,6 +13,7 @@ const fetch = jest.mock('node-fetch');
 const testRoute = ".\\fileDoc\\prueba1.md";
 const testRouteFalse = ".\fileDocprueba1.md";
 const testRouteAbs = "C:\\Users\\Toshiba\\md\\LIM018-md-links\\fileDoc\\prueba1.md";
+const testDirectory = ".\\fileDoc";
 
 const testArrayLinks = [
   {
@@ -104,11 +106,15 @@ describe("validateStatus", () => {
       message: "fail",
     },
   ];
+
   it("deberia obtener un array de links con status ok ", (done) => {
     Promise.all(validateStatus(testArrayLinks)).then((response) =>
       expect(response).toEqual(promiseResolve))
     done();
   });
+
+
+  // REVISAR PQ FALLAAAAAAAAAA--------------------------------------
 
   it("deberia obtener un array de links con status fail", (done) => {
     fetch.mockImplementation(() => Promise.reject(
@@ -125,11 +131,22 @@ describe("validateStatus", () => {
   });
 });
 
+describe("findFileInDirectory", () => {
+    it("is a function", () => {
+      expect(typeof findFileInDirectory).toBe("function");
+    });
+  
+  const arrayDirectory = 
+  [
+    'fileDoc\\fileDocII\\prueba3.md',
+    'fileDoc\\fileDocII\\prueba4.md',
+    'fileDoc\\prueba1.md',
+    'fileDoc\\prueba2.md'
+  ];
+console.log('diectory',findFileInDirectory(testDirectory))
+  it('deberia poder recorer el directorio', ()=> {
+    expect(findFileInDirectory(testDirectory).toEqual(arrayDirectory))
+  })
+  });
 
-// describe('mdLink', () => {
-
-//   it('shoul.....', () => {
-//    expect().resolves.toBe('');
-//   });
-
-// });
+ 

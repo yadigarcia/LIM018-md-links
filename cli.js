@@ -13,7 +13,6 @@ const stats = process.argv.includes('--stats')
 
 
 
-
 mdLinks(pathFile, { Option: validate, option: stats })
     .then((links) => {
         console.log(gradient('cyan', 'pink', 'red', 'green', 'blue')('Bienvenido a md-Link'))
