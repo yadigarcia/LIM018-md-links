@@ -5,21 +5,23 @@ const {
   ruteExtension,
   getLinks,
   validateStatus,
+  statsLinks,
   findFileInDirectory
 } = require("../index.js");
+const fetch = require("node-fetch");
 
-const fetch = jest.mock('node-fetch');
+jest.mock('node-fetch');
 
 const testRoute = ".\\fileDoc\\prueba1.md";
 const testRouteFalse = ".\fileDocprueba1.md";
-const testRouteAbs = "C:\\Users\\Toshiba\\md\\LIM018-md-links\\fileDoc\\prueba1.md";
+const testRouteAbs = "D:\\LABORATORIA\\LIM018-md-links\\fileDoc\\prueba1.md";
 const testDirectory = ".\\fileDoc";
 
 const testArrayLinks = [
   {
     href: "https://es.wikipedia.org/wiki/Markdown",
     text: "Markdown",
-    routeF: "C:\\Users\\Toshiba\\md\\LIM018-md-links.\\fileDoc\\prueba1.md",
+    file: "D:\\LABORATORIA\\LIM018-md-links\\fileDoc\\prueba1.md",
   },
 ];
 
@@ -70,7 +72,7 @@ describe("getLinks", () => {
   });
 
   it("deberia obtener un array de links", () => {
-    expect(getLinks(testRoute)).toEqual(testArrayLinks);
+    expect(getLinks(testRouteAbs)).toEqual(testArrayLinks);
   });
 });
 
@@ -84,7 +86,7 @@ describe("validateStatus", () => {
     {
       href: "https://es.wikipedia.org/wiki/Markdown",
       text: "Markdown",
-      routeF: "C:\\Users\\Toshiba\\md\\LIM018-md-links.\\fileDoc\\prueba1.md",
+      file: "D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md",
     },
   ];
 
@@ -92,17 +94,25 @@ describe("validateStatus", () => {
     {
       href: "https://es.wikipedia.org/wiki/Markdown",
       text: "Markdown",
-      routeF: "C:\\Users\\Toshiba\\md\\LIM018-md-links.\\fileDoc\\prueba1.md",
+      file: "D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md",
       linksStatus: 200,
       message: "ok",
     },
   ];
+
+  const testArrayLinksFail = [
+    {
+      href: "https://es.wikipedia.org/wiki/Madown",
+      text: "Markdown",
+      file: "D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md",
+    },
+  ];
+
   const promiseReject = [
     {
-      href: "https://es.wikipedia.org/wiki/Markdown",
+      href: "https://es.wikipedia.org/wiki/Madown",
       text: "Markdown",
-      routeF: "C:\\Users\\Toshiba\\md\\LIM018-md-links.\\fileDoc\\prueba1.md",
-      linksStatus: 404,
+      file: "D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md",
       message: "fail",
     },
   ];
@@ -114,21 +124,21 @@ describe("validateStatus", () => {
   });
 
 
-  // REVISAR PQ FALLAAAAAAAAAA--------------------------------------
+  
 
   it("deberia obtener un array de links con status fail", (done) => {
+ 
     fetch.mockImplementation(() => Promise.reject(
       {
-        status:404,
-        message: 'fail',
+        message: "fail",
       }
     ))
-
-    Promise.all(validateStatus(testArrayLinks))
+       Promise.all(validateStatus(testArrayLinksFail))
       .then((res) => {
         expect(res).toEqual(promiseReject);
+        done();
       });
-  });
+   });
 });
 
 describe("findFileInDirectory", () => {
@@ -136,17 +146,58 @@ describe("findFileInDirectory", () => {
       expect(typeof findFileInDirectory).toBe("function");
     });
   
-  const arrayDirectory = 
-  [
-    'fileDoc\\fileDocII\\prueba3.md',
-    'fileDoc\\fileDocII\\prueba4.md',
-    'fileDoc\\prueba1.md',
-    'fileDoc\\prueba2.md'
-  ];
-console.log('diectory',findFileInDirectory(testDirectory))
+ 
+
   it('deberia poder recorer el directorio', ()=> {
-    expect(findFileInDirectory(testDirectory).toEqual(arrayDirectory))
+    
+    const arrayDirectory = 
+    [
+      'fileDoc\\fileDocII\\prueba3.md',
+      'fileDoc\\fileDocII\\prueba4.md',
+      'fileDoc\\prueba1.md',
+      'fileDoc\\prueba2.md'
+    ]
+
+  const x = findFileInDirectory(testDirectory)
+
+    expect(x).toEqual(arrayDirectory)
   })
   });
 
- 
+
+describe("statsLinks", () => {
+  it("is a function", () => {
+      expect(typeof statsLinks).toBe("function");
+  });
+  
+    const promiseResolve = [
+      {
+        href: "https://es.wikipedia.org/wiki/Markdown",
+        text: "Markdown",
+        file: "D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md",
+        linksStatus: 200,
+        message: "ok",
+      },
+      {
+        href: "https://es.wikipedia.org/wiki/Isabel_II_del_Reino_Unido",
+        text: "Isabel II del Reino Unido",
+        file: "D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md",
+        linksStatus: 200,
+        message: "ok",
+      },
+      {
+        href: "https://es.wikipedia.org/wiki/Isabel_II_del_Reino_Unido",
+        text: "Isabel II del Reino Unido",
+        file: "D:\\LABORATORIA\\LIM018-md-links.\\fileDoc\\prueba1.md",
+        linksStatus: 404,
+        message: "fail",
+      },
+    ];
+
+    const objLinksStats = {"total": 3, "unique": 2, "broken": 1,}
+
+  it("deberia devolverme un objeto con la cantidad de links", () => {
+      expect(statsLinks(promiseResolve)).toEqual(objLinksStats);
+    })
+
+});

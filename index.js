@@ -33,11 +33,11 @@ const getLinks = (route) => {
       urlFind.map((url) => {
         const text = url.slice(1, url.indexOf("]"));
         const href = url.slice(url.indexOf("]") + 2, url.indexOf(")"));
-        const routeF = __dirname + route;
+        const file = route;
         const objLiks = {
           href,
           text,
-          routeF,
+          file,
         };
         arrayLinks.push(objLiks);
       });
@@ -63,9 +63,10 @@ const validateStatus = (arrayLinks) => {
         };
       })
       .catch((err) => {
-        console.log(err);
+       // console.log('error aki', err);
         return {
           ...objL,
+          // linksStatus: err.status,
           message: "fail",
         };
       });

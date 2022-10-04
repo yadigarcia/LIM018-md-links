@@ -49,7 +49,8 @@ const mdLinks = (route) =>
         });
       }
     } else {
-      reject("ruta no existe");
+      console.error("Por favor ingresa una ruta valida".red)
+     // reject("ruta no existe");
     }
   });
 
@@ -57,10 +58,10 @@ const mdLinks = (route) =>
 
   // RUTA1
 // const testRoute = ".\\fileDoc\\prueba1.md";
-/*const testRoute = ".\\fileDoc";
+/*const testRoute = ".\\fileDo";
 
 mdLinks(testRoute).then((result) => {
-  console.log(result);
+  //console.log(result);
 });*/
 
   module.exports = mdLinks;
